@@ -962,7 +962,6 @@ void menu() {
             break;
         case 7:
             blink_text(57, 28, "EXIT");
-            printf("\n\n________________");
             exit(0);
             break;
         }
