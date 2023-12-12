@@ -410,14 +410,14 @@ void Save_game(vector<int> v, bool current) //luu game
 {
     fstream input("input.txt", ios::app);
     fstream output("output.txt", ios::app);
-    gotoXY(70, 24); cout << "Press name: ";
+    gotoXY(70, 24); cout << "Press name: "; //luu ten
     string ten;
     if (current == false) input << '*';
     getline(cin, ten); input << ten << "\n";
     for (int i = 0; i < v.size(); i++) {
         output << v[i]<<" ";
-    }
-    if (current == false) output << "200 ";
+    } //luu thong so game
+    if (current == false) output << "200 "; //gia tri khi choi voi may
     output << 100 << "\n";
     input.close();
     a_th = 1 * (a_th != 0);
@@ -518,7 +518,7 @@ int f_load() //tuy chon tai game
     if (key >= 48 && key < 48 + z) return (key - 48);
     else if (key == 70 || key == 102) {
         cout << "Press from 0 to " << z - 1 << " to choose game to delete: ";
-        char key = _getch();
+        char key = _getch(); //chon game de xoa
         if (key >= 48 && key < 48 + z) xoagame(key - 48);
         gotoXY(41, 25); cout << "Game " << key - 48 << " has been deleted!";
         Sleep(1000); system("cls");
@@ -531,6 +531,7 @@ int f_load() //tuy chon tai game
 }
 void nhapnhay(int s[15][15])
 {
+    Ancontro();
     int x = 0;
     while (x < 5) {
         for (int i = 0; i < 15; i++)
@@ -575,12 +576,38 @@ void load_to(vector<int>& v, bool& check, int s[15][15], int& xx, int& oo)
         }
     }
 }
+int dieukhien(int& x, int& y, bool temp) {
+    char key;
+    int a, w, d, s;
+    if (temp==false) {
+        a = 75;
+        w = 72;
+        d = 77;
+        s = 80;
+    }
+    else {
+        a = 97;
+        w = 119;
+        d = 100;
+        s = 115;
+    }
+    while (1) {
+        key = _getch();
+        if (key == a && x > 3) { gotoXY(x - 4, y); x -= 4; }
+        if (key == w && y > 1) { gotoXY(x, y - 2); y -= 2; }
+        if (key == d && x < 59) { gotoXY(x + 4, y); x += 4; }
+        if (key == s && y < 29) { gotoXY(x, y + 2); y += 2; }
+        if (key == 13) return 0;
+        if (key == 27) return 1;
+        if (key == 32) return 2;
+        if (key == 8) return 3;
+    }
+}
 int dogame(vector<int> v, bool cur, bool may) //thuc hien game
 {
     set_color(0);
     //ShowScrollbar(0);
     gotoXY(1, 1);
-    char key;
     int s[15][15] = {};
     int x = 3, y = 1;
     int xx = 0, oo = 0; //dem luot di
@@ -604,6 +631,7 @@ int dogame(vector<int> v, bool cur, bool may) //thuc hien game
         if (check == false && may == false) { //nuoc di cua may
             check = !check;
             while (1) {
+                Sleep(200);
                 if (x < 76) {
                     gotoXY(x + 4, y); x += 4;
                 }
@@ -628,16 +656,13 @@ int dogame(vector<int> v, bool cur, bool may) //thuc hien game
             }
             continue;
         }
-        key = _getch();
-        if (key == 32) return 2; //choi lai
-        if (key == 8) { //luu game
-            Save_game(v, may); return 3;
+        int a = dieukhien(x, y, check);
+        if (a == 2) return 2; //choi lai
+        if (a == 3) { 
+            Save_game(v, may); //luu va thoat game
+            return 3;
         }
-        if ((key == 97 || key == 65) && x > 3) { gotoXY(x - 4, y); x -= 4; }
-        if ((key == 119 || key == 87) && y > 1) { gotoXY(x, y - 2); y -= 2; }
-        if ((key == 100 || key == 68) && x < 59) { gotoXY(x + 4, y); x += 4; }
-        if ((key == 115 || key == 83) && y < 29) { gotoXY(x, y + 2); y += 2; }
-        if (key == 13 && s[(x - 3) / 4][(y - 1) / 2] == 0) {
+        if (a==0 && s[(x - 3) / 4][(y - 1) / 2] == 0) {
             check = !check;
             if (check == false) { //nuoc di cua X
                 xx++;
@@ -662,8 +687,8 @@ int dogame(vector<int> v, bool cur, bool may) //thuc hien game
                 }
             }
         }
-        if (key == 27) {
-           a_th = 1 * (a_th != 0);
+        if (a==1) { //thoat game
+            a_th = 1;
             _sound();
             return 4;
         } //thoat game
@@ -751,7 +776,7 @@ void Start_game(int& kq, int n, bool may) //khoi dong game
     bool cur = true;
     if (n > -1) {  //tai game (neu co)
         Load_game(n, v);
-        if (v[v.size() - 1] == 200) {
+        if (v[v.size() - 1] == 200) { //kiem tra co phai da choi voi may khong
             may = false;
             v.pop_back();
         }
@@ -821,7 +846,7 @@ void dongchuchinh() {
 void _help() {
     system("cls");
     printf("\n\n\n\t\t\t\t\t\t  CONTROL:");
-    printf("\n\n\t\tUsing 'W', 'A', 'S', 'D' button to go up, left, down, right;\n\t\t press Enter to play");
+    printf("\n\n\t\tUsing 'W', 'A', 'S', 'D' (for X) button to go up, left, down, right;\n\t\t press Enter to play");
     printf("\n\n\t\tTurn on English keyboard to play");
     printf("\n\n\n\t\t\t\t\t\tINSTRUCTION:\n");
     printf("\n\n\t\t1. Caro is a 2-player game. Players alternate turns marking an X or O on an\n\t\t empty square on the board. The X player go first\n");
@@ -939,7 +964,7 @@ void menu() {
             Start_game(kq, temp, true);
             break;
         case 4:
-            switch (a_th) {
+            switch (a_th) { //bat tat nhac
             case 0:
                 blink_text(53, 22, "SOUND: OFF");
                 a_th = 1;
@@ -953,15 +978,16 @@ void menu() {
             }
             break;
         case 5:
-            blink_text(57, 24, "HELP");
+            blink_text(57, 24, "HELP"); //mo bang chon huong dan choi
             _help();
             break;
         case 6:
-            blink_text(56, 26, "ABOUT");
+            blink_text(56, 26, "ABOUT"); //mo thong tin gioi thieu
             _about();
             break;
         case 7:
-            blink_text(57, 28, "EXIT");
+            blink_text(57, 28, "EXIT"); //thoat game
+            printf("\n\n________________");
             exit(0);
             break;
         }
